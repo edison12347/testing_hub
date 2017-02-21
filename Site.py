@@ -6,11 +6,12 @@ f = open('request.txt', 'r+')
 
 print(f.read())
 
-start_date = datetime.strptime("21/02/2017", '%d/%m/%Y')
+START_DATE = datetime.strptime("21/02/2017", '%d/%m/%Y')
+DAYS2CHECK = 10
 #end_date = datetime.strptime("23/02/2017", '%d/%m/%Y')
 
-for i in range(1,5):
-    d = start_date + timedelta(days = i)
+for i in range(1,DAYS2CHECK):
+    d = START_DATE + timedelta(days = i)
     d = d.strftime('%d/%m/%Y')
     r = requests.get('https://reentryvisa.inis.gov.ie/website/INISOA/IOA.nsf/(getApps4DT)?openagent&dt='+ d +'&type=I&num=1&_=1486826956189')
     f.write(str(d)+ " : " + str(r.text) + '\n')
