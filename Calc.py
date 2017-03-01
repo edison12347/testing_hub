@@ -3,11 +3,16 @@
 # Get input
 # Check how correct are the inputs
 # Get input from file
-OPERATOR_LIST = ["-", "+", "*", "/", "l", "q"]
+SUM = "+"
+MINUS = "-"
+MULTIPLY = "*"
+DIVIDE = "/"
+QUIT = "q"
+LOAD = "l"
+OPERATOR_LIST = [SUM, MINUS, MULTIPLY, DIVIDE, LOAD, QUIT]
 
-log = open('calc_log.txt', 'r')
 
-def check_operator():
+def get_input():
 
     while True:
         print('What would you like to do')
@@ -17,17 +22,15 @@ def check_operator():
         if operator not in OPERATOR_LIST:
             print("not valid operator")
             continue
-        # elif operator == OPERATOR_LIST[4]:
-        #     return operator = log.read()
-        elif operator == OPERATOR_LIST[5]:
+
+        elif operator == QUIT:
             exit()
-        else:
-            return operator
-        print('Provide values')
+        break
+    if operator == LOAD:
+        return [None, None], operator
 
-
-def check_input():
     while True:
+        print('Provide values')
         values = [input('value_1?\n'), input('value_2?\n')]
         try:
             for i in range(len(values)):
@@ -40,38 +43,50 @@ def check_input():
             continue
         else:
             print('OK')
-            return values
+        return values, operator
 
-def make_calc(operator, values):
 
-    if operator == OPERATOR_LIST[4]:
-        log = open('calc_log.txt', 'r')
-        lines = log.readlines()
-        line = 0
-        operator = lines[line].split(' ')[0]
-        values = int(lines[line].split(' ')[1]), int(lines[line].split(' ')[2]),
+def load_log(line):
+    log = open('calc_log.txt', 'r')
+    lines = log.readlines()
+    split_results = lines[line].split(' ')
+    operator = split_results[0]
+    values = int(split_results[1]), int(split_results[2]),
+    return values, operator
 
-    if operator == OPERATOR_LIST[0]:
-        output = values[0] - values[1]
-    elif operator == OPERATOR_LIST[1]:
+
+def make_operation(values, operator):
+    if operator == SUM:
         output = values[0] + values[1]
-    elif operator == OPERATOR_LIST[2]:
+    elif operator == MINUS:
+        output = values[0] - values[1]
+    elif operator == MULTIPLY:
         output = values[0] * values[1]
-    elif operator == OPERATOR_LIST[3]:
+    elif operator == DIVIDE:
         try:
             output = values[0] / values[1]
         except ZeroDivisionError as e:
             print("Can't divide by 0")
+    return output
+
+def make_calc(values, operator):
+    if operator == LOAD:
+        log = open('calc_log.txt', 'r')
+        for line in range(len(log.readlines())):
+            values, operator = load_log(line)
+            output = make_operation(values, operator)
+            print("line: ",line, ' output: ',output)
+        return output
+
+    output = make_operation(values, operator)
     log = open('calc_log.txt', 'a')
     log.write('{} {} {} \n'.format(operator, values[0], values[1]))
-    print(output)
+    print('Result: ', output)
     return output
 
 
 while True:
-    output = make_calc(check_operator(), check_input())
-
-x = log.read()
-print(x)
+    values, operator = get_input()
+    output = make_calc(values, operator)
 
 log.close()
